@@ -19,23 +19,28 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Find Project and Setup Gradle
+      - name: Unzip Source Code
         run: |
-          # Dhoondho ki build.gradle / build.gradle.kts kahan hai
-          BUILD_FILE=$(find . -name "build.gradle" -o -name "build.gradle.kts" | head -n 1)
+          echo "Unzipping project file..."
+          unzip -o Laprri.ai-assistant.zip -d extracted_project
+
+      - name: Setup Gradle and Build APK
+        run: |
+          # Extracted folder ke andar build.gradle dhoondho
+          BUILD_FILE=$(find extracted_project -name "build.gradle" -o -name "build.gradle.kts" | head -n 1)
           
           if [ -z "$BUILD_FILE" ]; then
-            echo "Error: Repository me koi build.gradle file nahi mili!"
+            echo "Error: Zip file ke andar build.gradle nahi mila!"
             exit 1
           fi
 
           PROJECT_DIR=$(dirname "$BUILD_FILE")
-          echo "Project found at: $PROJECT_DIR"
+          echo "Project directory found: $PROJECT_DIR"
           cd "$PROJECT_DIR"
 
-          # Agar gradlew nahi hai toh Gradle install karke wrapper generate karega
+          # Agar gradlew missing hai toh wrapper generate karega
           if [ ! -f "gradlew" ]; then
-            echo "gradlew missing tha, generate kiya ja raha hai..."
+            echo "gradlew generating..."
             sudo apt-get update && sudo apt-get install -y gradle
             gradle wrapper
           fi
