@@ -19,34 +19,21 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
-
       - name: Unzip Source Code
         run: |
-          echo "Unzipping project file..."
           unzip -o Laprri.ai-assistant.zip -d extracted_project
 
-      - name: Build Debug APK
+      - name: Build APK
         run: |
-          SETTINGS_FILE=$(find extracted_project -name "settings.gradle" -o -name "settings.gradle.kts" | head -n 1)
+          ROOT_DIR=$(find extracted_project -name "settings.gradle*" -exec dirname {} \;)
+          cd "$ROOT_DIR"
           
-          if [ -n "$SETTINGS_FILE" ]; then
-            PROJECT_DIR=$(dirname "$SETTINGS_FILE")
+          if [ -f "./gradlew" ]; then
+            chmod +x gradlew
+            ./gradlew assembleDebug --no-daemon
           else
-            BUILD_FILE=$(find extracted_project -name "build.gradle" -o -name "build.gradle.kts" | sort | head -n 1)
-            PROJECT_DIR=$(dirname "$BUILD_FILE")
+            gradle assembleDebug --no-daemon
           fi
-
-          echo "Root Project directory: $PROJECT_DIR"
-          cd "$PROJECT_DIR"
-
-          # Project ke plugin (9.1.1) ke liye exact required Gradle 9.3.1 wrapper generate karega
-          echo "Generating Gradle 9.3.1 wrapper..."
-          gradle wrapper --gradle-version 9.3.1
-
-          chmod +x gradlew
-          ./gradlew assembleDebug --no-daemon
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
