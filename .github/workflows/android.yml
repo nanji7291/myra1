@@ -19,12 +19,15 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+
       - name: Unzip Source Code
         run: |
           echo "Unzipping project file..."
           unzip -o Laprri.ai-assistant.zip -d extracted_project
 
-      - name: Setup Gradle and Build APK
+      - name: Build Debug APK
         run: |
           # Extracted folder ke andar build.gradle dhoondho
           BUILD_FILE=$(find extracted_project -name "build.gradle" -o -name "build.gradle.kts" | head -n 1)
@@ -38,10 +41,9 @@ jobs:
           echo "Project directory found: $PROJECT_DIR"
           cd "$PROJECT_DIR"
 
-          # Agar gradlew missing hai toh wrapper generate karega
+          # Agar gradlew nahi hai toh gradle command se wrapper generate karega
           if [ ! -f "gradlew" ]; then
-            echo "gradlew generating..."
-            sudo apt-get update && sudo apt-get install -y gradle
+            echo "gradlew missing tha, generate kiya ja raha hai..."
             gradle wrapper
           fi
 
