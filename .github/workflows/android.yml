@@ -19,19 +19,27 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
-
-      - name: Find gradlew and Build APK
+      - name: Find Project and Setup Gradle
         run: |
-          # Agar gradlew subfolder me hai to waha navigate karke build karega
-          GRADLEW_PATH=$(find . -name "gradlew" -type f | head -n 1)
-          if [ -z "$GRADLEW_PATH" ]; then
-            echo "Error: gradlew file nahi mili repository me!"
+          # Dhoondho ki build.gradle / build.gradle.kts kahan hai
+          BUILD_FILE=$(find . -name "build.gradle" -o -name "build.gradle.kts" | head -n 1)
+          
+          if [ -z "$BUILD_FILE" ]; then
+            echo "Error: Repository me koi build.gradle file nahi mili!"
             exit 1
           fi
-          PROJECT_DIR=$(dirname "$GRADLEW_PATH")
+
+          PROJECT_DIR=$(dirname "$BUILD_FILE")
+          echo "Project found at: $PROJECT_DIR"
           cd "$PROJECT_DIR"
+
+          # Agar gradlew nahi hai toh Gradle install karke wrapper generate karega
+          if [ ! -f "gradlew" ]; then
+            echo "gradlew missing tha, generate kiya ja raha hai..."
+            sudo apt-get update && sudo apt-get install -y gradle
+            gradle wrapper
+          fi
+
           chmod +x gradlew
           ./gradlew assembleDebug
 
