@@ -41,11 +41,12 @@ jobs:
           echo "Root Project directory: $PROJECT_DIR"
           cd "$PROJECT_DIR"
 
-          # Gradle 8.4 wrapper setup
-          gradle wrapper --gradle-version 8.4
+          # Project ke plugin (9.1.1) ke liye exact required Gradle 9.3.1 wrapper generate karega
+          echo "Generating Gradle 9.3.1 wrapper..."
+          gradle wrapper --gradle-version 9.3.1
 
           chmod +x gradlew
-          ./gradlew assembleDebug --no-daemon -Dorg.gradle.unsafe.isolated-projects=false
+          ./gradlew assembleDebug --no-daemon
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
