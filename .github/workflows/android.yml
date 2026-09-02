@@ -41,14 +41,11 @@ jobs:
           echo "Root Project directory: $PROJECT_DIR"
           cd "$PROJECT_DIR"
 
-          # Gradle 8.5 wrapper generate karega taaki KSP crash na ho
-          if [ ! -f "gradlew" ]; then
-            echo "Generating Gradle 8.5 wrapper..."
-            gradle wrapper --gradle-version 8.5
-          fi
+          # Gradle 8.4 wrapper setup
+          gradle wrapper --gradle-version 8.4
 
           chmod +x gradlew
-          ./gradlew assembleDebug --no-daemon
+          ./gradlew assembleDebug --no-daemon -Dorg.gradle.unsafe.isolated-projects=false
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
