@@ -1,7 +1,4 @@
-- name: Setup Debug Keystore
-  run: |
-    mkdir -p ~/.android
-    keytool -genkey -v -keystore ~/.android/debug.keystore -storepass android -alias androiddebugkey -keypass android -dname "CN=Android Debug,O=Android,C=US" -keyalg RSA -keysize 2048 -validity 10000: Build Android APK
+name: Build Android APK
 
 on:
   push:
@@ -22,13 +19,18 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
+      - name: Setup Debug Keystore
+        run: |
+          mkdir -p ~/.android
+          keytool -genkey -v -keystore ~/.android/debug.keystore -storepass android -alias androiddebugkey -keypass android -dname "CN=Android Debug,O=Android,C=US" -keyalg RSA -keysize 2048 -validity 10000
+
       - name: Unzip Source Code
         run: |
-          unzip -o Laprri.ai-assistant.zip -d extracted_project
+          unzip -o laprri.ai-assistant.zip -d extracted_project
 
       - name: Build APK
         run: |
-          ROOT_DIR=$(find extracted_project -name "settings.gradle*" -exec dirname {} \;)
+          ROOT_DIR=$(find extracted_project -name "settings.gradle" -exec dirname {} \;)
           cd "$ROOT_DIR"
           
           if [ -f "./gradlew" ]; then
@@ -42,4 +44,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: my-app-apk
-          path: '**/build/outputs/apk/debug/*.apk'
+          path: "**/build/outputs/apk/debug/*.apk"'
