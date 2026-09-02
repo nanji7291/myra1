@@ -30,8 +30,15 @@ jobs:
 
       - name: Build APK
         run: |
-          ROOT_DIR=$(find extracted_project -name "settings.gradle" -exec dirname {} \;)
-          cd "$ROOT_DIR"
+          SETTINGS_FILE=$(find extracted_project -name "settings.gradle" -o -name "settings.gradle.kts" | head -n 1)
+          if [ -z "$SETTINGS_FILE" ]; then
+            echo "Error: settings.gradle file not found anywhere inside extracted zip!"
+            exit 1
+          fi
+          
+          PROJECT_DIR=$(dirname "$SETTINGS_FILE")
+          echo "Project directory found at: $PROJECT_DIR"
+          cd "$PROJECT_DIR"
           
           if [ -f "./gradlew" ]; then
             chmod +x gradlew
