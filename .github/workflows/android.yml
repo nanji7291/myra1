@@ -26,7 +26,7 @@ jobs:
 
       - name: Unzip Source Code
         run: |
-          unzip -o laprri.ai-assistant.zip -d extracted_project
+          unzip -o Laprri.ai-assistant.zip -d extracted_project
 
       - name: Build APK
         run: |
