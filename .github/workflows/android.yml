@@ -1,4 +1,7 @@
-name: Build Android APK
+- name: Setup Debug Keystore
+  run: |
+    mkdir -p ~/.android
+    keytool -genkey -v -keystore ~/.android/debug.keystore -storepass android -alias androiddebugkey -keypass android -dname "CN=Android Debug,O=Android,C=US" -keyalg RSA -keysize 2048 -validity 10000: Build Android APK
 
 on:
   push:
