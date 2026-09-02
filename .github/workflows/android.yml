@@ -23,10 +23,11 @@ jobs:
       uses: gradle/actions/setup-gradle@v3
 
     - name: Build Debug APK
-      run: gradle assembleDebug --stacktrace
+      run: gradle assembleDebug
+      working-directory: ./Laprri.ai-assistant
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
       with:
         name: my-app-apk
-        path: app/build/outputs/apk/debug/*.apk
+        path: Laprri.ai-assistant/app/build/outputs/apk/debug/*.apk
