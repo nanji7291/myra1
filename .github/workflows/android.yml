@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch: # Isse aap Actions tab se manually bhi trigger kar sakte hain
+  workflow_dispatch:
 
 jobs:
   build:
@@ -19,8 +19,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
-          cache: 'npm'
+          node-version: 20
 
       # 3. Java Development Kit (JDK 17) setup
       - name: Set up JDK 17
@@ -33,7 +32,7 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      # 5. Dependencies install karein (agar package.json ho)
+      # 5. Dependencies install karein
       - name: Install Node Dependencies
         run: |
           if [ -f package.json ]; then
@@ -43,7 +42,7 @@ jobs:
       # 6. Gradle Executable Permissions dein
       - name: Make Gradlew Executable
         run: |
-          if [ -f android/gradlew ]; then
+          if [ -d android ] && [ -f android/gradlew ]; then
             chmod +x android/gradlew
           elif [ -f gradlew ]; then
             chmod +x gradlew
