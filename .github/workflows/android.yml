@@ -39,9 +39,20 @@ jobs:
             npm install
           fi
 
-      # 6. Make Gradlew Executable & Build Debug APK
+      # 6. Generate Android Files & Build APK
       - name: Build Debug APK
         run: |
+          # Agar Capacitor / Ionic app hai
+          if grep -q "@capacitor/cli" package.json 2>/dev/null; then
+            npx cap sync android || true
+          fi
+
+          # Agar React Native / Expo app hai aur android folder missing hai
+          if [ ! -d "android" ] && grep -q "expo" package.json 2>/dev/null; then
+            npx expo prebuild --platform android || true
+          fi
+
+          # Gradle build execution
           if [ -f android/gradlew ]; then
             cd android
             chmod +x gradlew
@@ -49,9 +60,11 @@ jobs:
           elif [ -f gradlew ]; then
             chmod +x gradlew
             ./gradlew assembleDebug --stacktrace
+          elif [ -d android ]; then
+            cd android
+            gradle assembleDebug --stacktrace
           else
-            echo "Error: gradlew file not found in root or android folder!"
-            exit 1
+            gradle assembleDebug --stacktrace
           fi
 
       # 7. Upload APK Artifact
@@ -62,3 +75,4 @@ jobs:
           path: |
             android/app/build/outputs/apk/debug/*.apk
             app/build/outputs/apk/debug/*.apk
+            **/*.apk
